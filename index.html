@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nordiske aksjeindekser</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --border:         rgba(11,11,11,0.10);
+    --delta-good:     #006300;
+    --delta-critical: #d03b3b;
+    --series-1:       #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --border:         rgba(255,255,255,0.10);
+      --delta-good:     #0ca30c;
+      --delta-critical: #e66767;
+      --series-1:       #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --border:         rgba(255,255,255,0.10);
+    --delta-good:     #0ca30c;
+    --delta-critical: #e66767;
+    --series-1:       #3987e5;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 24px 64px;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .theme-toggle:hover { color: var(--text-primary); }
+
+  .draft-note {
+    margin: 20px 0 28px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2px;
+    background: var(--gridline);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .tile {
+    background: var(--surface-1);
+    padding: 20px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tile .label {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .tile .country {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .tile .value {
+    font-size: 30px;
+    font-weight: 600;
+    font-variant-numeric: proportional-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .tile .delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    width: fit-content;
+  }
+  .delta.up { color: var(--delta-good); }
+  .delta.down { color: var(--delta-critical); }
+  .delta .arrow { font-size: 12px; }
+
+  .tile .meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: auto;
+  }
+
+  .nordic-tile {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--border);
+  }
+  .nordic-tile .value { font-size: 26px; }
+
+  footer {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  footer a { color: var(--text-secondary); }
+  footer .sources { margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Nordiske aksjeindekser</h1>
+      <p class="subtitle">Dagens status &middot; oppdatert 4. september 2026, ca. kl. 09:20 (norsk tid)</p>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button">Mørk visning</button>
+  </header>
+
+  <div class="draft-note">
+    Lokal prototype &ndash; denne siden ligger foreløpig kun i denne økten. Når vi har avklart tilgang til API-nøkkel og webhotell, publiserer vi en oppdatert versjon dit.
+  </div>
+
+  <div class="grid">
+    <div class="tile">
+      <div>
+        <div class="label">OSEBX &ndash; Hovedindeksen</div>
+        <div class="country">Norge, Oslo Børs</div>
+      </div>
+      <div class="value">2&nbsp;105,14</div>
+      <div class="delta down"><span class="arrow">&#9660;</span> −0,03 % i dag</div>
+      <div class="meta">Kl. 09:33</div>
+    </div>
+
+    <div class="tile">
+      <div>
+        <div class="label">OMXS30</div>
+        <div class="country">Sverige, Stockholmsbörsen</div>
+      </div>
+      <div class="value">3&nbsp;282,84</div>
+      <div class="delta up"><span class="arrow">&#9650;</span> +0,14 % i dag</div>
+      <div class="meta">Kl. 09:18</div>
+    </div>
+
+    <div class="tile">
+      <div>
+        <div class="label">OMXC25</div>
+        <div class="country">Danmark, København</div>
+      </div>
+      <div class="value">1&nbsp;923,80</div>
+      <div class="delta up"><span class="arrow">&#9650;</span> +0,41 % i dag</div>
+      <div class="meta">Kl. 09:18</div>
+    </div>
+
+    <div class="tile">
+      <div>
+        <div class="label">OMXH25</div>
+        <div class="country">Finland, Helsingfors</div>
+      </div>
+      <div class="value">6&nbsp;428,72</div>
+      <div class="delta up"><span class="arrow">&#9650;</span> +0,40 % i dag</div>
+      <div class="meta">Kl. 09:18 (norsk tid)</div>
+    </div>
+
+    <div class="tile nordic-tile">
+      <div>
+        <div class="label">OMX Nordic 40</div>
+        <div class="country">Samlet nordisk indeks, 40 største selskaper</div>
+      </div>
+      <div class="value">2&nbsp;711,16 pts</div>
+      <div class="delta up"><span class="arrow">&#9650;</span> +0,37 % i dag</div>
+      <div class="meta">Kl. 09:33 (norsk tid)</div>
+    </div>
+  </div>
+
+  <footer>
+    Ganske flat start på dagen &ndash; Oslo Børs er svakt ned, mens de tre andre landene er svakt opp, med Danmark og Finland i front. Tallene er forsinkede markedsdata (typisk inntil 15 minutter), hentet manuelt. Ingen automatisk oppdatering er satt opp ennå.
+    <div class="sources">
+      Kilder: <a href="https://e24.no/bors/instrument/OSEBX.OSE">E24 (OSEBX)</a> &middot;
+      <a href="https://www.nordnet.se/marknaden/indikator/omxs30">Nordnet (OMXS30)</a> &middot;
+      <a href="https://www.nordnet.dk/markedet/indikator/omxc25">Nordnet (OMXC25)</a> &middot;
+      <a href="https://www.nordnet.fi/markkinakatsaus/indikaattori/omxh25">Nordnet (OMXH25)</a> &middot;
+      <a href="https://www.marketscreener.com/quote/index/OMX-NORDIC-40-30080007/">MarketScreener (OMX Nordic 40)</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  const btn = document.getElementById('themeToggle');
+  let dark = false;
+  btn.addEventListener('click', () => {
+    dark = !dark;
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    btn.textContent = dark ? 'Lys visning' : 'Mørk visning';
+  });
+</script>
+</body>
+</html>

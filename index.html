@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nordiske aksjeindekser</title>
+<!--
+  Google AdSense: når du har en godkjent AdSense-konto, lim inn Google sin
+  globale "site tag" (script-taggen som starter med
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX">)
+  her i <head>, én gang for hele siden.
+-->
 <style>
   :root {
     color-scheme: light;
@@ -170,6 +176,23 @@
   }
   footer a { color: var(--text-secondary); }
   footer .sources { margin-top: 6px; }
+
+  .ad-slot {
+    margin-top: 28px;
+    padding: 16px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    background: var(--surface-1);
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .ad-slot .ad-placeholder {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
 </style>
 </head>
 <body>
@@ -236,6 +259,15 @@
       <div class="delta up"><span class="arrow">&#9650;</span> +0,33 % i dag</div>
       <div class="meta">Kl. 14:59 (norsk tid)</div>
     </div>
+  </div>
+
+  <!--
+    Google AdSense-annonse: lim inn annonseenheten din her (koden Google gir deg,
+    starter typisk med <ins class="adsbygoogle" ...> og en liten <script> under).
+    Fjern <div class="ad-placeholder">-linjen når du limer inn den ekte koden.
+  -->
+  <div class="ad-slot">
+    <div class="ad-placeholder">Annonseplass &ndash; lim inn AdSense-koden din her</div>
   </div>
 
   <footer>

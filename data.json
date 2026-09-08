@@ -1,11 +1,11 @@
 {
-  "oppdatert": "2026-09-08T12:27:24.077Z",
+  "oppdatert": "2026-09-08T12:33:58.248Z",
   "indekser": {
     "osebx": {
       "navn": "OSEBX",
       "land": "Norge, Oslo Børs",
-      "verdi": "2 109,23",
-      "endring": 0.53
+      "verdi": "2 108,59",
+      "endring": 0.5
     },
     "omxs30": {
       "navn": "OMXS30",
@@ -33,9 +33,9 @@
     }
   },
   "sisteFeil": [
-    "omxs30: Klarte ikke å tolke endringstallet: \"+17,45\"",
-    "omxc25: Klarte ikke å tolke endringstallet: \"+1,40\"",
-    "omxh25: Klarte ikke å tolke endringstallet: \"+30,49\"",
+    "omxs30: Klarte ikke å tolke endringstallet: \"+16,14\"",
+    "omxc25: Klarte ikke å tolke endringstallet: \"+0,86\"",
+    "omxh25: Klarte ikke å tolke endringstallet: \"+25,06\"",
     "omxn40: Fant ikke OMX Nordic 40-verdien i sideteksten"
   ]
 }

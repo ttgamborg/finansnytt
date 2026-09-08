@@ -3,54 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nordiske aksjeindekser</title>
-<!--
-  Google AdSense: når du har en godkjent AdSense-konto, lim inn Google sin
-  globale "site tag" (script-taggen som starter med
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX">)
-  her i <head>, én gang for hele siden.
--->
+<title>Nordiske aksjeindekser &ndash; versjon 2</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4161569370244738"
+     crossorigin="anonymous"></script>
 <style>
   :root {
     color-scheme: light;
-    --surface-1:      #fcfcfb;
-    --page-plane:     #f9f9f7;
-    --text-primary:   #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted:     #898781;
-    --gridline:       #e1e0d9;
-    --border:         rgba(11,11,11,0.10);
-    --delta-good:     #006300;
-    --delta-critical: #d03b3b;
-    --series-1:       #2a78d6;
+    --page-plane:     #f3f1ec;
+    --surface-1:      #ffffff;
+    --text-primary:   #2c2c2a;
+    --text-secondary: #5c5a54;
+    --text-muted:     #8c897f;
+    --border:         rgba(44,44,42,0.08);
+
+    --block-navy:     #5b6b82;   /* dusty slate blue */
+    --block-navy-ink: #f5f3ee;
+    --block-sand:     #e9e3d8;   /* dusty sand */
+    --block-sand-ink: #2c2c2a;
+
+    --accent-sage:    #6f9284;   /* muted positive */
+    --accent-terra:   #b97b6e;   /* muted negative */
+    --ring-track:     rgba(245,243,238,0.28);
   }
   @media (prefers-color-scheme: dark) {
     :root:where(:not([data-theme="light"])) {
       color-scheme: dark;
-      --surface-1:      #1a1a19;
-      --page-plane:     #0d0d0d;
-      --text-primary:   #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted:     #898781;
-      --gridline:       #2c2c2a;
-      --border:         rgba(255,255,255,0.10);
-      --delta-good:     #0ca30c;
-      --delta-critical: #e66767;
-      --series-1:       #3987e5;
+      --page-plane:     #16181b;
+      --surface-1:      #1f2226;
+      --text-primary:   #ece9e2;
+      --text-secondary: #b7b3a8;
+      --text-muted:     #86837a;
+      --border:         rgba(255,255,255,0.08);
+
+      --block-navy:     #3b4757;
+      --block-navy-ink: #eee9e0;
+      --block-sand:     #2a2d31;
+      --block-sand-ink: #eee9e0;
+
+      --accent-sage:    #86ab9c;
+      --accent-terra:   #cf9284;
+      --ring-track:     rgba(255,255,255,0.14);
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --surface-1:      #1a1a19;
-    --page-plane:     #0d0d0d;
-    --text-primary:   #ffffff;
-    --text-secondary: #c3c2b7;
-    --text-muted:     #898781;
-    --gridline:       #2c2c2a;
-    --border:         rgba(255,255,255,0.10);
-    --delta-good:     #0ca30c;
-    --delta-critical: #e66767;
-    --series-1:       #3987e5;
+    --page-plane:     #16181b;
+    --surface-1:      #1f2226;
+    --text-primary:   #ece9e2;
+    --text-secondary: #b7b3a8;
+    --text-muted:     #86837a;
+    --border:         rgba(255,255,255,0.08);
+
+    --block-navy:     #3b4757;
+    --block-navy-ink: #eee9e0;
+    --block-sand:     #2a2d31;
+    --block-sand-ink: #eee9e0;
+
+    --accent-sage:    #86ab9c;
+    --accent-terra:   #cf9284;
+    --ring-track:     rgba(255,255,255,0.14);
   }
 
   * { box-sizing: border-box; }
@@ -73,7 +84,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 8px;
+    margin-bottom: 24px;
   }
 
   h1 {
@@ -88,7 +99,7 @@
     margin: 0;
   }
 
-  .theme-toggle {
+  .btn {
     border: 1px solid var(--border);
     background: var(--surface-1);
     color: var(--text-secondary);
@@ -97,91 +108,101 @@
     border-radius: 6px;
     cursor: pointer;
     font-family: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
   }
-  .theme-toggle:hover { color: var(--text-primary); }
-
-  .draft-note {
-    margin: 20px 0 28px;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface-1);
-    color: var(--text-secondary);
-    font-size: 13px;
-  }
+  .btn:hover { color: var(--text-primary); }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2px;
-    background: var(--gridline);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
-  .tile {
-    background: var(--surface-1);
-    padding: 20px 20px 18px;
+  .card {
+    border-radius: 16px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    min-height: 150px;
   }
+  .card.navy { background: var(--block-navy); color: var(--block-navy-ink); }
+  .card.sand { background: var(--block-sand); color: var(--block-sand-ink); }
 
-  .tile .label {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-  .tile .country {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .tile .value {
-    font-size: 30px;
+  .card .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
     font-weight: 600;
-    font-variant-numeric: proportional-nums;
+  }
+  .card .icon { font-size: 26px; line-height: 1; margin: 2px 0; }
+  .card .headline {
+    font-size: 26px;
+    font-weight: 700;
     letter-spacing: -0.01em;
   }
-
-  .tile .delta {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+  .card .desc {
+    font-size: 13px;
+    opacity: 0.85;
+    line-height: 1.5;
+  }
+  .card .delta {
     font-size: 14px;
-    font-weight: 600;
-    width: fit-content;
-  }
-  .delta.up { color: var(--delta-good); }
-  .delta.down { color: var(--delta-critical); }
-  .delta .arrow { font-size: 12px; }
-
-  .tile .meta {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: auto;
+    font-weight: 700;
   }
 
-  .nordic-tile {
+  .hero {
     grid-column: 1 / -1;
-    border-top: 1px solid var(--border);
+    background: var(--block-navy);
+    color: var(--block-navy-ink);
+    border-radius: 16px;
+    padding: 26px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
   }
-  .nordic-tile .value { font-size: 26px; }
+  .hero .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .hero .value {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .hero .desc { font-size: 13px; opacity: 0.85; max-width: 34ch; margin-top: 6px; }
 
-  footer {
-    margin-top: 28px;
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.6;
+  .ring-wrap { position: relative; width: 108px; height: 108px; flex-shrink: 0; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-label {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700;
   }
-  footer a { color: var(--text-secondary); }
-  footer .sources { margin-top: 6px; }
+
+  .row3 {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .up { color: var(--accent-sage); }
+  .down { color: var(--accent-terra); }
+  .card.navy .up { color: #bfe0d2; }
+  .card.navy .down { color: #f0c3b7; }
 
   .ad-slot {
-    margin-top: 28px;
+    margin-top: 20px;
     padding: 16px;
     border: 1px dashed var(--border);
-    border-radius: 10px;
+    border-radius: 16px;
     background: var(--surface-1);
     min-height: 90px;
     display: flex;
@@ -189,9 +210,20 @@
     justify-content: center;
     text-align: center;
   }
-  .ad-slot .ad-placeholder {
+  .ad-slot .ad-placeholder { font-size: 12px; color: var(--text-muted); }
+
+  footer {
+    margin-top: 24px;
     font-size: 12px;
     color: var(--text-muted);
+    line-height: 1.6;
+  }
+  footer a { color: var(--text-secondary); }
+  footer .sources { margin-top: 6px; }
+
+  @media (max-width: 640px) {
+    .grid, .row3 { grid-template-columns: 1fr; }
+    .hero { flex-direction: column; align-items: flex-start; }
   }
 </style>
 </head>
@@ -202,70 +234,67 @@
       <h1>Nordiske aksjeindekser</h1>
       <p class="subtitle">Dagens status &middot; oppdatert 7. september 2026, ca. kl. 14:55 (norsk tid)</p>
     </div>
-    <button class="theme-toggle" id="themeToggle" type="button">Mørk visning</button>
+    <div style="display:flex; gap:8px;">
+      <a class="btn" href="index.html">Tilbake til versjon 1</a>
+      <button class="btn" id="themeToggle" type="button">Mørk visning</button>
+    </div>
   </header>
 
-  <div class="draft-note">
-    Tallene oppdateres foreløpig manuelt &ndash; ingen automatisk henting er koblet på ennå.
+  <div class="grid" style="margin-bottom: 14px;">
+    <div class="card navy">
+      <div class="eyebrow">Sterkest i dag</div>
+      <div class="icon">&#8599;</div>
+      <div class="headline">OMXH25</div>
+      <div class="desc">Finland, Helsingfors &middot; 6&nbsp;491,93</div>
+      <div class="delta up">+0,57 % i dag</div>
+    </div>
+    <div class="card sand">
+      <div class="eyebrow">Svakest i dag</div>
+      <div class="icon">&#8600;</div>
+      <div class="headline">OSEBX</div>
+      <div class="desc">Norge, Oslo Børs &middot; 2&nbsp;100,77</div>
+      <div class="delta down">&minus;0,14 % i dag</div>
+    </div>
   </div>
 
-  <div class="grid">
-    <div class="tile">
-      <div>
-        <div class="label">OSEBX &ndash; Hovedindeksen</div>
-        <div class="country">Norge, Oslo Børs</div>
-      </div>
-      <div class="value">2&nbsp;100,77</div>
-      <div class="delta down"><span class="arrow">&#9660;</span> −0,14 % i dag</div>
-      <div class="meta">Kl. 14:58</div>
-    </div>
-
-    <div class="tile">
-      <div>
-        <div class="label">OMXS30</div>
-        <div class="country">Sverige, Stockholmsbörsen</div>
-      </div>
-      <div class="value">3&nbsp;296,76</div>
-      <div class="delta up"><span class="arrow">&#9650;</span> +0,39 % i dag</div>
-      <div class="meta">Kl. 14:43</div>
-    </div>
-
-    <div class="tile">
-      <div>
-        <div class="label">OMXC25</div>
-        <div class="country">Danmark, København</div>
-      </div>
-      <div class="value">1&nbsp;914,53</div>
-      <div class="delta up"><span class="arrow">&#9650;</span> +0,12 % i dag</div>
-      <div class="meta">Kl. 14:43</div>
-    </div>
-
-    <div class="tile">
-      <div>
-        <div class="label">OMXH25</div>
-        <div class="country">Finland, Helsingfors</div>
-      </div>
-      <div class="value">6&nbsp;491,93</div>
-      <div class="delta up"><span class="arrow">&#9650;</span> +0,57 % i dag</div>
-      <div class="meta">Kl. 14:43 (norsk tid)</div>
-    </div>
-
-    <div class="tile nordic-tile">
-      <div>
-        <div class="label">OMX Nordic 40</div>
-        <div class="country">Samlet nordisk indeks, 40 største selskaper</div>
-      </div>
+  <div class="hero" style="margin-bottom: 14px;">
+    <div>
+      <div class="eyebrow">OMX Nordic 40 &middot; samlet nordisk indeks</div>
       <div class="value">2&nbsp;711,13 pts</div>
-      <div class="delta up"><span class="arrow">&#9650;</span> +0,33 % i dag</div>
-      <div class="meta">Kl. 14:59 (norsk tid)</div>
+      <div class="delta up" style="color:#bfe0d2;">+0,33 % i dag</div>
+      <div class="desc">40 største selskaper på tvers av de nordiske børsene, kl. 14:59 (norsk tid).</div>
+    </div>
+    <div class="ring-wrap">
+      <svg width="108" height="108" viewBox="0 0 108 108">
+        <circle cx="54" cy="54" r="46" fill="none" stroke="var(--ring-track)" stroke-width="12"/>
+        <circle cx="54" cy="54" r="46" fill="none" stroke="#bfe0d2" stroke-width="12"
+                stroke-linecap="round"
+                stroke-dasharray="289.03" stroke-dashoffset="57.8"/>
+      </svg>
+      <div class="ring-label">4/5</div>
     </div>
   </div>
 
-  <!--
-    Google AdSense-annonse: lim inn annonseenheten din her (koden Google gir deg,
-    starter typisk med <ins class="adsbygoogle" ...> og en liten <script> under).
-    Fjern <div class="ad-placeholder">-linjen når du limer inn den ekte koden.
-  -->
+  <div class="grid row3">
+    <div class="card sand">
+      <div class="eyebrow">OMXS30</div>
+      <div class="headline" style="font-size:22px;">3&nbsp;296,76</div>
+      <div class="desc">Sverige, Stockholmsbörsen</div>
+      <div class="delta up">+0,39 % i dag</div>
+    </div>
+    <div class="card sand">
+      <div class="eyebrow">OMXC25</div>
+      <div class="headline" style="font-size:22px;">1&nbsp;914,53</div>
+      <div class="desc">Danmark, København</div>
+      <div class="delta up">+0,12 % i dag</div>
+    </div>
+    <div class="card navy">
+      <div class="eyebrow">Dagens oppsummering</div>
+      <div class="headline">80 %</div>
+      <div class="desc">4 av 5 nordiske indekser er opp i dag &ndash; kun Oslo Børs er ned.</div>
+    </div>
+  </div>
+
   <div class="ad-slot">
     <div class="ad-placeholder">Annonseplass &ndash; lim inn AdSense-koden din her</div>
   </div>

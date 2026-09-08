@@ -84,11 +84,16 @@ async function hentFraNordnetOversikt(page, indeksNavn) {
   return { verdi, endring };
 }
 
-async function ventPaMarketscreener(page, timeoutMs = VENT_TIMEOUT_MS) {
+// investing.com viser raden som fire linjer rett under "Add to Watchlist":
+// siste kurs, poengendring, og prosentendring i parentes, f.eks.
+// "2 712,20" / "+1,36" / "(+0,05%)".
+const OMXN40_MONSTER = /OMX Nordic 40 \(OMXN40\)[\s\S]{0,200}?([\d,]+\.\d+)\s*\n\s*[+\-][\d.,]+\s*\n\s*\(([+\-][\d.,]+)%\)/;
+
+async function ventPaInvesting(page, timeoutMs = VENT_TIMEOUT_MS) {
   try {
     await page.waitForFunction(
-      () => /([\d.,]+)\s*PTS[\s\t]+([+\-][\d.,]+)%/i.test(document.body.innerText),
-      null,
+      (monsterKilde) => new RegExp(monsterKilde).test(document.body.innerText),
+      OMXN40_MONSTER.source,
       { timeout: timeoutMs, polling: 300 }
     );
   } catch {
@@ -133,17 +138,24 @@ const kilder = [
     key: "omxn40",
     navn: "OMX Nordic 40",
     land: "Samlet nordisk indeks, 40 største selskaper",
-    url: "https://www.marketscreener.com/quote/index/OMX-NORDIC-40-30080007/",
-    // Litt lenger frist enn de andre kildene, siden denne siden av og til er
-    // tregere til å laste inn selve kurs-widgeten.
-    vent: (page) => ventPaMarketscreener(page, 25000),
+    // Byttet fra MarketScreener til investing.com: MarketScreener ser ut til å ha
+    // en bot-beskyttelse som spesifikt bremser/blokkerer GitHub Actions' IP-adresser
+    // (fungerte alltid fint i interaktiv testing, men aldri på selve kjøremaskinen,
+    // selv med lang ventetid) — et klassisk tegn på at det ikke er en laste-hastighet-
+    // problem, men en filtrering av selve trafikken.
+    url: "https://www.investing.com/indices/omx-nordic-40",
+    vent: (page) => ventPaInvesting(page),
     async hent(page) {
       const tekst = await page.locator("body").innerText();
-      const m = tekst.match(/([\d.,]+)\s*PTS[\s\t]+([+\-][\d.,]+)%/i);
+      const m = tekst.match(OMXN40_MONSTER);
       if (!m) throw new Error("Fant ikke OMX Nordic 40-verdien i sideteksten");
       const endring = parseFloat(m[2].replace(",", "."));
       if (Number.isNaN(endring)) throw new Error(`Ugyldig endringstall: "${m[2]}"`);
-      return { verdi: `${m[1]} pts`, endring };
+      // investing.com viser tallet på engelsk format ("2,712.20") — gjør det om til
+      // norsk formatering ("2 712,20") for å matche de andre kildene på siden.
+      const [heltall, desimal] = m[1].split(".");
+      const verdiNorsk = `${heltall.replace(/,/g, " ")}${desimal !== undefined ? "," + desimal : ""}`;
+      return { verdi: `${verdiNorsk} pts`, endring };
     },
   },
 ];

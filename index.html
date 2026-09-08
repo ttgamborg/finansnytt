@@ -315,7 +315,7 @@
   </div>
 
   <footer>
-    <span id="footer-summary">Alle fem nordiske indekser er opp i dag &ndash; Oslo Børs sterkest, København svakest av de fire landsindeksene. Tallene er forsinkede markedsdata (typisk inntil 15 minutter) og oppdateres automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden.</span>
+    <span id="footer-summary">Alle fem nordiske indekser er opp i dag &ndash; Oslo Børs sterkest, København svakest av de fire landsindeksene. Tallene er forsinkede markedsdata (typisk inntil 15 minutter) og oppdateres automatisk i bakgrunnen ca. hvert 15. minutt i børsåpningstiden.</span>
     <div class="sources">
       Kilder: <a href="https://e24.no/bors/instrument/OSEBX.OSE">E24 (OSEBX)</a> &middot;
       <a href="https://www.nordnet.se/marknaden/indikator/omxs30">Nordnet (OMXS30)</a> &middot;
@@ -336,7 +336,7 @@
   });
 
   // Henter data.json, som en GitHub Actions-jobb oppdaterer automatisk ca. hvert
-  // 30. minutt i børsåpningstiden (ekte sanntidsoppslag mot børssidene lar seg ikke
+  // 15. minutt i børsåpningstiden (ekte sanntidsoppslag mot børssidene lar seg ikke
   // gjøre direkte fra nettleseren, siden kildene blokkerer den typen kall fra andre
   // domener). Siden henter selv data.json på nytt hvert 5. minutt mens den er åpen,
   // slik at tallene holder seg ferske helt av seg selv.
@@ -454,7 +454,7 @@
       } else {
         footer = `${oppAntall} av ${totalAntall} nordiske indekser er opp i dag – ${sterkest.navn} sterkest, ${svakest.navn} svakest.`;
       }
-      footer += ' Tallene er forsinkede markedsdata (typisk inntil 15 minutter) og oppdateres automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden.';
+      footer += ' Tallene er forsinkede markedsdata (typisk inntil 15 minutter) og oppdateres automatisk i bakgrunnen ca. hvert 15. minutt i børsåpningstiden.';
       tekst('footer-summary', footer);
 
       tekst('subtitle', 'Dagens status · oppdatert ' + formaterTidspunkt(data.oppdatert));

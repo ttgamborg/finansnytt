@@ -1,0 +1,12 @@
+{
+  "name": "finansnytt-auto",
+  "private": true,
+  "type": "module",
+  "description": "Henter nordiske aksjeindekser automatisk til finansnytt.nrdn.no",
+  "scripts": {
+    "hent-tall": "node scripts/hent-tall.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.47.0"
+  }
+}

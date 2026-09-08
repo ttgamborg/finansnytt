@@ -2,11 +2,13 @@
 // i repo-roten. Kjøres av GitHub Actions-workflowen .github/workflows/oppdater-tall.yml,
 // men kan også kjøres lokalt med: node scripts/hent-tall.mjs
 //
-// Prinsipp: vi leser den synlige teksten på siden (ikke CSS-klassenavn, som gjerne
-// endrer seg hver gang et nettsted bygges på nytt) og finner tallene ut fra de faste
-// etikettene ("Senast", "Utveckling idag" osv.). Det gjør skriptet mer robust mot
-// mindre designendringer på kildesidene, men ikke ugjennomtrengelig — dukker en kilde
-// opp med "Fant ikke ..."-feil i loggen, må etiketten/selectoren under oppdateres.
+// De fire landsindeksene hentes fra Nordnets samlede markedsoversikt
+// (nordnet.no/market/<land>), som har identisk sideoppbygning for alle fire land —
+// bare med ulikt hvilken indeks som står øverst. Vi leser den synlige teksten på
+// siden (ikke CSS-klassenavn, som gjerne endrer seg hver gang nettstedet bygges på
+// nytt) og finner raden til riktig indeksnavn. Det gjør skriptet robust mot mindre
+// designendringer, men ikke ugjennomtrengelig — dukker en kilde opp med
+// "Fant ikke ..."-feil i loggen, må indeksnavnet/selectoren under oppdateres.
 
 import { chromium } from "playwright";
 import fs from "node:fs";
@@ -16,33 +18,33 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = path.join(__dirname, "..", "data.json");
 
-// Finn linjen rett etter en gitt etikett i sidens synlige tekst, og tolk den som
-// "verdi" + "endring i prosent". Brukes for Nordnet-sidene, som alle har samme
-// oppbygning (bare på ulike språk).
-async function hentFraEtikett(page, prisEtikett, endringEtikett) {
+// Finn raden for en gitt indeks i Nordnets markedsoversikt. Radene ser slik ut i
+// sidens synlige tekst (fire linjer per indeks): navn, klokkeslett, endring i
+// prosent, siste kurs. Endringstallet bruker det typografiske minustegnet "−"
+// (U+2212), ikke vanlig bindestrek, derfor egen håndtering av fortegn.
+async function hentFraNordnetOversikt(page, indeksNavn) {
   const tekst = await page.locator("body").innerText();
   const linjer = tekst
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const prisIdx = linjer.findIndex((l) => l === prisEtikett);
-  const endringIdx = linjer.findIndex((l) => l === endringEtikett);
-  if (prisIdx === -1 || endringIdx === -1) {
-    throw new Error(
-      `Fant ikke etiketten "${prisEtikett}" og/eller "${endringEtikett}" i sideteksten`
-    );
+  const idx = linjer.findIndex((l) => l === indeksNavn);
+  if (idx === -1 || idx + 3 >= linjer.length) {
+    throw new Error(`Fant ikke raden for "${indeksNavn}" i sideteksten`);
   }
 
-  const verdi = linjer[prisIdx + 1];
-  const endringLinje = linjer[endringIdx + 1]; // f.eks. "+0,40%+13,24"
-  const m = endringLinje.match(/^([+\-][\d.,]+)%/);
+  const endringRaw = linjer[idx + 2]; // f.eks. "+0,49%" eller "−0,43%"
+  const verdi = linjer[idx + 3]; // f.eks. "2 108,45"
+
+  const m = endringRaw.match(/^([+\-−])([\d.,]+)%$/);
   if (!m) {
-    throw new Error(`Klarte ikke å tolke endringstallet: "${endringLinje}"`);
+    throw new Error(`Klarte ikke å tolke endringstallet for "${indeksNavn}": "${endringRaw}"`);
   }
-  const endring = parseFloat(m[1].replace(",", "."));
+  const fortegn = m[1] === "+" ? 1 : -1;
+  const endring = fortegn * parseFloat(m[2].replace(",", "."));
   if (Number.isNaN(endring)) {
-    throw new Error(`Endringstallet ga ikke et gyldig tall: "${m[1]}"`);
+    throw new Error(`Endringstallet ga ikke et gyldig tall for "${indeksNavn}": "${endringRaw}"`);
   }
   return { verdi, endring };
 }
@@ -52,42 +54,29 @@ const kilder = [
     key: "osebx",
     navn: "OSEBX",
     land: "Norge, Oslo Børs",
-    url: "https://e24.no/bors/instrument/OSEBX.OSE",
-    async hent(page) {
-      const prisSel = "#detailed-indicator .millistream-indicator-detailed-lastprice";
-      const diffSel = "#detailed-indicator .millistream-indicator-detailed-diffprc";
-      await page.waitForSelector(prisSel, { timeout: 20000 });
-      const verdi = (await page.locator(prisSel).first().innerText()).trim();
-      const diffTxt = (await page.locator(diffSel).first().innerText()).trim();
-      const negativ = await page
-        .locator(diffSel)
-        .first()
-        .evaluate((el) => el.className.includes("status-negative"));
-      const tall = parseFloat(diffTxt.replace(",", "."));
-      if (Number.isNaN(tall)) throw new Error(`Klarte ikke å tolke OSEBX-endring: "${diffTxt}"`);
-      return { verdi, endring: negativ ? -tall : tall };
-    },
+    url: "https://www.nordnet.no/market/no?no",
+    hent: (page) => hentFraNordnetOversikt(page, "OSEBX"),
   },
   {
     key: "omxs30",
     navn: "OMXS30",
     land: "Sverige, Stockholmsbörsen",
-    url: "https://www.nordnet.se/marknaden/indikator/omxs30",
-    hent: (page) => hentFraEtikett(page, "Senast", "Utveckling idag"),
+    url: "https://www.nordnet.no/market/se?se",
+    hent: (page) => hentFraNordnetOversikt(page, "OMX Stockholm 30"),
   },
   {
     key: "omxc25",
     navn: "OMXC25",
     land: "Danmark, København",
-    url: "https://www.nordnet.dk/markedet/indikator/omxc25",
-    hent: (page) => hentFraEtikett(page, "Seneste", "Udvikling i dag"),
+    url: "https://www.nordnet.no/market/dk?dk",
+    hent: (page) => hentFraNordnetOversikt(page, "OMX Copenhagen 25"),
   },
   {
     key: "omxh25",
     navn: "OMXH25",
     land: "Finland, Helsingfors",
-    url: "https://www.nordnet.fi/markkinakatsaus/indikaattori/omxh25",
-    hent: (page) => hentFraEtikett(page, "Viimeisin", "Kehitys tänään"),
+    url: "https://www.nordnet.no/market/fi?fi",
+    hent: (page) => hentFraNordnetOversikt(page, "OMX Helsinki 25"),
   },
   {
     key: "omxn40",

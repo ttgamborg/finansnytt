@@ -9,6 +9,11 @@
 // nytt) og finner raden til riktig indeksnavn. Det gjør skriptet robust mot mindre
 // designendringer, men ikke ugjennomtrengelig — dukker en kilde opp med
 // "Fant ikke ..."-feil i loggen, må indeksnavnet/selectoren under oppdateres.
+//
+// Før vi leser av tallene venter vi til siden faktisk har rendret dem (i stedet for
+// en fast pause), siden GitHub sine kjøremaskiner kan være tregere og mer variable
+// enn en vanlig nettleser — en fast pause på f.eks. 3 sekunder er noen ganger for
+// kort, og da fanger vi opp en tom/ikke-ferdig-lastet side i stedet for tallene.
 
 import { chromium } from "playwright";
 import fs from "node:fs";
@@ -17,6 +22,28 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = path.join(__dirname, "..", "data.json");
+const VENT_TIMEOUT_MS = 15000;
+
+// Venter til raden for en gitt indeks faktisk viser et prosenttall på Nordnets
+// markedsoversikt (ikke bare kolonneoverskriften "i dag %", som står der før
+// tallene er lastet).
+async function ventPaNordnetRad(page, indeksNavn) {
+  try {
+    await page.waitForFunction(
+      (navn) => {
+        const t = document.body.innerText;
+        const i = t.indexOf(navn);
+        if (i === -1) return false;
+        const utsnitt = t.slice(i, i + 200);
+        return /[+\-−][\d.,]+%/.test(utsnitt);
+      },
+      indeksNavn,
+      { timeout: VENT_TIMEOUT_MS, polling: 300 }
+    );
+  } catch {
+    throw new Error(`Tallene for "${indeksNavn}" rakk ikke å laste innen ${VENT_TIMEOUT_MS / 1000} sekunder`);
+  }
+}
 
 // Finn raden for en gitt indeks i Nordnets markedsoversikt. Radene ser slik ut i
 // sidens synlige tekst (fire linjer per indeks): navn, klokkeslett, endring i
@@ -49,12 +76,25 @@ async function hentFraNordnetOversikt(page, indeksNavn) {
   return { verdi, endring };
 }
 
+async function ventPaMarketscreener(page) {
+  try {
+    await page.waitForFunction(
+      () => /([\d.,]+)\s*PTS[\s\t]+([+\-][\d.,]+)%/i.test(document.body.innerText),
+      null,
+      { timeout: VENT_TIMEOUT_MS, polling: 300 }
+    );
+  } catch {
+    throw new Error(`OMX Nordic 40-tallet rakk ikke å laste innen ${VENT_TIMEOUT_MS / 1000} sekunder`);
+  }
+}
+
 const kilder = [
   {
     key: "osebx",
     navn: "OSEBX",
     land: "Norge, Oslo Børs",
     url: "https://www.nordnet.no/market/no?no",
+    vent: (page) => ventPaNordnetRad(page, "OSEBX"),
     hent: (page) => hentFraNordnetOversikt(page, "OSEBX"),
   },
   {
@@ -62,6 +102,7 @@ const kilder = [
     navn: "OMXS30",
     land: "Sverige, Stockholmsbörsen",
     url: "https://www.nordnet.no/market/se?se",
+    vent: (page) => ventPaNordnetRad(page, "OMX Stockholm 30"),
     hent: (page) => hentFraNordnetOversikt(page, "OMX Stockholm 30"),
   },
   {
@@ -69,6 +110,7 @@ const kilder = [
     navn: "OMXC25",
     land: "Danmark, København",
     url: "https://www.nordnet.no/market/dk?dk",
+    vent: (page) => ventPaNordnetRad(page, "OMX Copenhagen 25"),
     hent: (page) => hentFraNordnetOversikt(page, "OMX Copenhagen 25"),
   },
   {
@@ -76,6 +118,7 @@ const kilder = [
     navn: "OMXH25",
     land: "Finland, Helsingfors",
     url: "https://www.nordnet.no/market/fi?fi",
+    vent: (page) => ventPaNordnetRad(page, "OMX Helsinki 25"),
     hent: (page) => hentFraNordnetOversikt(page, "OMX Helsinki 25"),
   },
   {
@@ -83,6 +126,7 @@ const kilder = [
     navn: "OMX Nordic 40",
     land: "Samlet nordisk indeks, 40 største selskaper",
     url: "https://www.marketscreener.com/quote/index/OMX-NORDIC-40-30080007/",
+    vent: (page) => ventPaMarketscreener(page),
     async hent(page) {
       const tekst = await page.locator("body").innerText();
       const m = tekst.match(/([\d.,]+)\s*PTS[\s\t]+([+\-][\d.,]+)%/i);
@@ -113,9 +157,7 @@ async function main() {
       const page = await browser.newPage({ locale: "nb-NO" });
       try {
         await page.goto(kilde.url, { waitUntil: "domcontentloaded", timeout: 30000 });
-        // Gi siden litt tid til å hente og rendre live-tallene (mange av kildene
-        // henter kursdata asynkront etter at selve HTML-en er lastet).
-        await page.waitForTimeout(3000);
+        await kilde.vent(page);
         const { verdi, endring } = await kilde.hent(page);
         indekser[kilde.key] = {
           navn: kilde.navn,

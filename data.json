@@ -1,41 +1,36 @@
 {
-  "oppdatert": "2026-09-08T12:33:58.248Z",
+  "oppdatert": "2026-09-08T12:39:31Z",
   "indekser": {
     "osebx": {
       "navn": "OSEBX",
       "land": "Norge, Oslo Børs",
-      "verdi": "2 108,59",
-      "endring": 0.5
+      "verdi": "2 108,45",
+      "endring": 0.49
     },
     "omxs30": {
       "navn": "OMXS30",
       "land": "Sverige, Stockholmsbörsen",
-      "verdi": "3 305,08",
-      "endring": 0.4
+      "verdi": "3 311,08",
+      "endring": 0.58
     },
     "omxc25": {
       "navn": "OMXC25",
       "land": "Danmark, København",
-      "verdi": "1 916,56",
-      "endring": 0.25
+      "verdi": "1 913,93",
+      "endring": 0.11
     },
     "omxh25": {
       "navn": "OMXH25",
       "land": "Finland, Helsingfors",
-      "verdi": "6 518,89",
-      "endring": 0.36
+      "verdi": "6 523,47",
+      "endring": 0.43
     },
     "omxn40": {
       "navn": "OMX Nordic 40",
       "land": "Samlet nordisk indeks, 40 største selskaper",
-      "verdi": "2 714,61 pts",
-      "endring": 0.14
+      "verdi": "2 717,35 pts",
+      "endring": 0.24
     }
   },
-  "sisteFeil": [
-    "omxs30: Klarte ikke å tolke endringstallet: \"+16,14\"",
-    "omxc25: Klarte ikke å tolke endringstallet: \"+0,86\"",
-    "omxh25: Klarte ikke å tolke endringstallet: \"+25,06\"",
-    "omxn40: Fant ikke OMX Nordic 40-verdien i sideteksten"
-  ]
+  "sisteFeil": []
 }

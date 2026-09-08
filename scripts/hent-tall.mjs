@@ -24,10 +24,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = path.join(__dirname, "..", "data.json");
 const VENT_TIMEOUT_MS = 15000;
 
+// Et vanlig, "menneskelig" nettleser-navn. Playwrights standard headless Chromium
+// mangler en del vanlige nettleser-kjennetegn, og noen kilder (typisk sider med
+// bot-beskyttelse, som MarketScreener) kan derfor laste tregere eller vise
+// annet innhold enn i en ekte nettleser. Dette gjør ikke skriptet usynlig for
+// slik beskyttelse, men reduserer sjansen for at det blir en del av problemet.
+const USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
+
 // Venter til raden for en gitt indeks faktisk viser et prosenttall på Nordnets
 // markedsoversikt (ikke bare kolonneoverskriften "i dag %", som står der før
 // tallene er lastet).
-async function ventPaNordnetRad(page, indeksNavn) {
+async function ventPaNordnetRad(page, indeksNavn, timeoutMs = VENT_TIMEOUT_MS) {
   try {
     await page.waitForFunction(
       (navn) => {
@@ -38,10 +46,10 @@ async function ventPaNordnetRad(page, indeksNavn) {
         return /[+\-−][\d.,]+%/.test(utsnitt);
       },
       indeksNavn,
-      { timeout: VENT_TIMEOUT_MS, polling: 300 }
+      { timeout: timeoutMs, polling: 300 }
     );
   } catch {
-    throw new Error(`Tallene for "${indeksNavn}" rakk ikke å laste innen ${VENT_TIMEOUT_MS / 1000} sekunder`);
+    throw new Error(`Tallene for "${indeksNavn}" rakk ikke å laste innen ${timeoutMs / 1000} sekunder`);
   }
 }
 
@@ -76,15 +84,15 @@ async function hentFraNordnetOversikt(page, indeksNavn) {
   return { verdi, endring };
 }
 
-async function ventPaMarketscreener(page) {
+async function ventPaMarketscreener(page, timeoutMs = VENT_TIMEOUT_MS) {
   try {
     await page.waitForFunction(
       () => /([\d.,]+)\s*PTS[\s\t]+([+\-][\d.,]+)%/i.test(document.body.innerText),
       null,
-      { timeout: VENT_TIMEOUT_MS, polling: 300 }
+      { timeout: timeoutMs, polling: 300 }
     );
   } catch {
-    throw new Error(`OMX Nordic 40-tallet rakk ikke å laste innen ${VENT_TIMEOUT_MS / 1000} sekunder`);
+    throw new Error(`OMX Nordic 40-tallet rakk ikke å laste innen ${timeoutMs / 1000} sekunder`);
   }
 }
 
@@ -126,7 +134,9 @@ const kilder = [
     navn: "OMX Nordic 40",
     land: "Samlet nordisk indeks, 40 største selskaper",
     url: "https://www.marketscreener.com/quote/index/OMX-NORDIC-40-30080007/",
-    vent: (page) => ventPaMarketscreener(page),
+    // Litt lenger frist enn de andre kildene, siden denne siden av og til er
+    // tregere til å laste inn selve kurs-widgeten.
+    vent: (page) => ventPaMarketscreener(page, 25000),
     async hent(page) {
       const tekst = await page.locator("body").innerText();
       const m = tekst.match(/([\d.,]+)\s*PTS[\s\t]+([+\-][\d.,]+)%/i);
@@ -154,7 +164,7 @@ async function main() {
   const browser = await chromium.launch();
   try {
     for (const kilde of kilder) {
-      const page = await browser.newPage({ locale: "nb-NO" });
+      const page = await browser.newPage({ locale: "nb-NO", userAgent: USER_AGENT });
       try {
         await page.goto(kilde.url, { waitUntil: "domcontentloaded", timeout: 30000 });
         await kilde.vent(page);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nordiske aksjeindekser &ndash; versjon 2</title>
+<title>Nordiske aksjeindekser</title>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4161569370244738"
      crossorigin="anonymous"></script>
 <style>
@@ -197,6 +197,24 @@
   .down { color: var(--accent-terra); }
   .card.navy .up { color: #bfe0d2; }
   .card.navy .down { color: #f0c3b7; }
+  .hero .up { color: #bfe0d2; }
+  .hero .down { color: #f0c3b7; }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+  .status-bar button[disabled] { opacity: 0.6; cursor: default; }
 
   .ad-slot {
     margin-top: 20px;
@@ -232,65 +250,70 @@
   <header>
     <div>
       <h1>Nordiske aksjeindekser</h1>
-      <p class="subtitle">Dagens status &middot; oppdatert 8. september 2026, ca. kl. 12:39 (norsk tid)</p>
+      <p class="subtitle" id="subtitle">Dagens status for de nordiske hovedindeksene</p>
     </div>
     <div style="display:flex; gap:8px;">
       <button class="btn" id="themeToggle" type="button">Mørk visning</button>
     </div>
   </header>
 
+  <div class="status-bar">
+    <span id="statusText">Laster ferske tall &hellip;</span>
+    <button class="btn" id="refreshBtn" type="button">Hent nye tall</button>
+  </div>
+
   <div class="grid" style="margin-bottom: 14px;">
     <div class="card navy">
       <div class="eyebrow">Sterkest i dag</div>
-      <div class="icon">&#8599;</div>
-      <div class="headline">OSEBX</div>
-      <div class="desc">Norge, Oslo Børs &middot; 2&nbsp;108,11</div>
-      <div class="delta up" style="color:#bfe0d2;">+0,48 % i dag</div>
+      <div class="icon" id="strongest-icon">&#8599;</div>
+      <div class="headline" id="strongest-headline">OSEBX</div>
+      <div class="desc" id="strongest-desc">Norge, Oslo Børs &middot; 2&nbsp;108,11</div>
+      <div class="delta up" id="strongest-delta">+0,48 % i dag</div>
     </div>
     <div class="card sand">
       <div class="eyebrow">Svakest i dag</div>
-      <div class="icon">&#8594;</div>
-      <div class="headline">OMXC25</div>
-      <div class="desc">Danmark, København &middot; 1&nbsp;916,56</div>
-      <div class="delta up">+0,25 % i dag</div>
+      <div class="icon" id="weakest-icon">&#8594;</div>
+      <div class="headline" id="weakest-headline">OMXC25</div>
+      <div class="desc" id="weakest-desc">Danmark, København &middot; 1&nbsp;916,56</div>
+      <div class="delta up" id="weakest-delta">+0,25 % i dag</div>
     </div>
   </div>
 
   <div class="hero" style="margin-bottom: 14px;">
     <div>
       <div class="eyebrow">OMX Nordic 40 &middot; samlet nordisk indeks</div>
-      <div class="value">2&nbsp;714,61 pts</div>
-      <div class="delta up" style="color:#bfe0d2;">+0,14 % i dag</div>
-      <div class="desc">40 største selskaper på tvers av de nordiske børsene, kl. 12:39 (norsk tid).</div>
+      <div class="value" id="hero-value">2&nbsp;714,61 pts</div>
+      <div class="delta up" id="hero-delta">+0,14 % i dag</div>
+      <div class="desc" id="hero-desc">40 største selskaper på tvers av de nordiske børsene, kl. 12:39 (norsk tid).</div>
     </div>
     <div class="ring-wrap">
       <svg width="108" height="108" viewBox="0 0 108 108">
         <circle cx="54" cy="54" r="46" fill="none" stroke="var(--ring-track)" stroke-width="12"/>
         <circle cx="54" cy="54" r="46" fill="none" stroke="#bfe0d2" stroke-width="12"
                 stroke-linecap="round"
-                stroke-dasharray="289.03" stroke-dashoffset="0"/>
+                stroke-dasharray="289.03" stroke-dashoffset="0" id="ring-progress"/>
       </svg>
-      <div class="ring-label">5/5</div>
+      <div class="ring-label" id="ring-label">5/5</div>
     </div>
   </div>
 
   <div class="grid row3">
     <div class="card sand">
-      <div class="eyebrow">OMXS30</div>
-      <div class="headline" style="font-size:22px;">3&nbsp;305,08</div>
-      <div class="desc">Sverige, Stockholmsbörsen</div>
-      <div class="delta up">+0,40 % i dag</div>
+      <div class="eyebrow" id="mid1-eyebrow">OMXS30</div>
+      <div class="headline" style="font-size:22px;" id="mid1-value">3&nbsp;305,08</div>
+      <div class="desc" id="mid1-desc">Sverige, Stockholmsbörsen</div>
+      <div class="delta up" id="mid1-delta">+0,40 % i dag</div>
     </div>
     <div class="card sand">
-      <div class="eyebrow">OMXH25</div>
-      <div class="headline" style="font-size:22px;">6&nbsp;518,89</div>
-      <div class="desc">Finland, Helsingfors</div>
-      <div class="delta up">+0,36 % i dag</div>
+      <div class="eyebrow" id="mid2-eyebrow">OMXH25</div>
+      <div class="headline" style="font-size:22px;" id="mid2-value">6&nbsp;518,89</div>
+      <div class="desc" id="mid2-desc">Finland, Helsingfors</div>
+      <div class="delta up" id="mid2-delta">+0,36 % i dag</div>
     </div>
     <div class="card navy">
       <div class="eyebrow">Dagens oppsummering</div>
-      <div class="headline">100 %</div>
-      <div class="desc">5 av 5 nordiske indekser er opp i dag &ndash; Oslo Børs sterkest.</div>
+      <div class="headline" id="summary-pct">100 %</div>
+      <div class="desc" id="summary-desc">5 av 5 nordiske indekser er opp i dag &ndash; Oslo Børs sterkest.</div>
     </div>
   </div>
 
@@ -299,7 +322,7 @@
   </div>
 
   <footer>
-    Alle fem nordiske indekser er opp i dag &ndash; Oslo Børs sterkest, København svakest av de fire landsindeksene. Tallene er forsinkede markedsdata (typisk inntil 15 minutter), hentet manuelt.
+    <span id="footer-summary">Alle fem nordiske indekser er opp i dag &ndash; Oslo Børs sterkest, København svakest av de fire landsindeksene. Tallene er forsinkede markedsdata (typisk inntil 15 minutter). De hentes automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden &ndash; trykk &laquo;Hent nye tall&raquo; for å laste inn siste tilgjengelige runde på nytt.</span>
     <div class="sources">
       Kilder: <a href="https://e24.no/bors/instrument/OSEBX.OSE">E24 (OSEBX)</a> &middot;
       <a href="https://www.nordnet.se/marknaden/indikator/omxs30">Nordnet (OMXS30)</a> &middot;
@@ -318,6 +341,147 @@
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     btn.textContent = dark ? 'Lys visning' : 'Mørk visning';
   });
+
+  // Henter data.json, som en GitHub Actions-jobb oppdaterer automatisk ca. hvert
+  // 30. minutt i børsåpningstiden. Knappen "Hent nye tall" laster bare inn den
+  // filen på nytt (ekte sanntidsoppslag mot børssidene lar seg ikke gjøre direkte
+  // fra nettleseren, siden kildene blokkerer den typen kall fra andre domener).
+  const DATA_URL = 'data.json';
+  const LANDSINDEKSER = ['osebx', 'omxs30', 'omxc25', 'omxh25'];
+  const RING_OMKRETS = 289.03;
+
+  function formaterTidspunkt(iso) {
+    try {
+      const d = new Date(iso);
+      const dato = d.toLocaleDateString('nb-NO', { day: 'numeric', month: 'long' });
+      const tid = d.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' });
+      return `${dato}, ca. kl. ${tid} (norsk tid)`;
+    } catch {
+      return iso;
+    }
+  }
+
+  function klokkeslett(iso) {
+    try {
+      return new Date(iso).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
+    }
+  }
+
+  function ikonFor(endring) {
+    if (endring > 0.05) return '↗';
+    if (endring < -0.05) return '↘';
+    return '→';
+  }
+
+  function formatEndringTekst(endring) {
+    const opp = endring >= 0;
+    const tegn = opp ? '+' : '−';
+    const tall = Math.abs(endring).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return `${tegn}${tall} % i dag`;
+  }
+
+  function settDelta(el, endring) {
+    if (!el) return;
+    el.textContent = formatEndringTekst(endring);
+    el.className = 'delta ' + (endring >= 0 ? 'up' : 'down');
+  }
+
+  function tekst(id, verdi) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = verdi;
+  }
+
+  async function hentOgVisTall(manuell) {
+    const statusText = document.getElementById('statusText');
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = 'Henter …'; }
+    try {
+      const res = await fetch(DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const idx = data.indekser || {};
+
+      const land = LANDSINDEKSER
+        .map((key) => idx[key] && { key, ...idx[key] })
+        .filter((x) => x && typeof x.endring === 'number');
+
+      if (land.length < 2 || !idx.omxn40) {
+        throw new Error('Datafilen mangler tall for en eller flere indekser');
+      }
+
+      const sortert = [...land].sort((a, b) => b.endring - a.endring);
+      const sterkest = sortert[0];
+      const svakest = sortert[sortert.length - 1];
+      const midt = sortert.slice(1, -1);
+
+      tekst('strongest-icon', ikonFor(sterkest.endring));
+      tekst('strongest-headline', sterkest.navn);
+      tekst('strongest-desc', `${sterkest.land} · ${sterkest.verdi}`);
+      settDelta(document.getElementById('strongest-delta'), sterkest.endring);
+
+      tekst('weakest-icon', ikonFor(svakest.endring));
+      tekst('weakest-headline', svakest.navn);
+      tekst('weakest-desc', `${svakest.land} · ${svakest.verdi}`);
+      settDelta(document.getElementById('weakest-delta'), svakest.endring);
+
+      const midtSlots = ['mid1', 'mid2'];
+      midtSlots.forEach((slot, i) => {
+        const m = midt[i];
+        if (!m) return;
+        tekst(`${slot}-eyebrow`, m.navn);
+        tekst(`${slot}-value`, m.verdi);
+        tekst(`${slot}-desc`, m.land);
+        settDelta(document.getElementById(`${slot}-delta`), m.endring);
+      });
+
+      const n40 = idx.omxn40;
+      tekst('hero-value', n40.verdi);
+      settDelta(document.getElementById('hero-delta'), n40.endring);
+      tekst('hero-desc', `40 største selskaper på tvers av de nordiske børsene, kl. ${klokkeslett(data.oppdatert)} (norsk tid).`);
+
+      const alle = [...land, n40];
+      const oppAntall = alle.filter((x) => x.endring >= 0).length;
+      const totalAntall = alle.length;
+      const offset = RING_OMKRETS * (1 - oppAntall / totalAntall);
+      const ringEl = document.getElementById('ring-progress');
+      if (ringEl) ringEl.setAttribute('stroke-dashoffset', offset.toFixed(2));
+      tekst('ring-label', `${oppAntall}/${totalAntall}`);
+
+      const pct = Math.round((oppAntall / totalAntall) * 100);
+      tekst('summary-pct', pct + ' %');
+      tekst('summary-desc', `${oppAntall} av ${totalAntall} nordiske indekser er opp i dag – ${sterkest.navn} sterkest.`);
+
+      let footer;
+      if (oppAntall === totalAntall) {
+        footer = `Alle ${totalAntall} nordiske indekser er opp i dag – ${sterkest.navn} sterkest, ${svakest.navn} svakest av de fire landsindeksene.`;
+      } else if (oppAntall === 0) {
+        footer = `Alle ${totalAntall} nordiske indekser er ned i dag – ${svakest.navn} svakest, ${sterkest.navn} minst ned av de fire landsindeksene.`;
+      } else {
+        footer = `${oppAntall} av ${totalAntall} nordiske indekser er opp i dag – ${sterkest.navn} sterkest, ${svakest.navn} svakest.`;
+      }
+      footer += ' Tallene er forsinkede markedsdata (typisk inntil 15 minutter). De hentes automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden – trykk «Hent nye tall» for å laste inn siste tilgjengelige runde på nytt.';
+      tekst('footer-summary', footer);
+
+      tekst('subtitle', 'Dagens status · oppdatert ' + formaterTidspunkt(data.oppdatert));
+
+      let status = 'Sist oppdatert ' + formaterTidspunkt(data.oppdatert);
+      if (data.sisteFeil && data.sisteFeil.length) {
+        status += ' – noen kilder svarte ikke sist runde, viser forrige kjente verdi for disse.';
+      }
+      statusText.textContent = status;
+    } catch (err) {
+      statusText.textContent = manuell
+        ? 'Klarte ikke å hente nye tall akkurat nå (' + err.message + '). Viser sist kjente tall.'
+        : 'Fant ikke ferske tall (' + err.message + '). Viser sist kjente tall.';
+    } finally {
+      if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = 'Hent nye tall'; }
+    }
+  }
+
+  document.getElementById('refreshBtn').addEventListener('click', () => hentOgVisTall(true));
+  hentOgVisTall(false);
 </script>
 </body>
 </html>

@@ -114,6 +114,31 @@
   }
   .btn:hover { color: var(--text-primary); }
 
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 22px;
+  }
+  .brand-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--block-navy);
+    color: var(--block-navy-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+  }
+
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -153,6 +178,10 @@
     font-size: 14px;
     font-weight: 700;
   }
+  .card .meta {
+    font-size: 11px;
+    opacity: 0.6;
+  }
 
   .hero {
     grid-column: 1 / -1;
@@ -180,6 +209,7 @@
     letter-spacing: -0.01em;
   }
   .hero .desc { font-size: 13px; opacity: 0.85; max-width: 34ch; margin-top: 6px; }
+  .hero .hero-meta { font-size: 12px; opacity: 0.65; margin-top: 6px; }
 
   .ring-wrap { position: relative; width: 108px; height: 108px; flex-shrink: 0; }
   .ring-wrap svg { transform: rotate(-90deg); }
@@ -199,16 +229,6 @@
   .card.navy .down { color: #f0c3b7; }
   .hero .up { color: #bfe0d2; }
   .hero .down { color: #f0c3b7; }
-
-  .status-bar {
-    margin-bottom: 14px;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--surface-1);
-    color: var(--text-secondary);
-    font-size: 13px;
-  }
 
   .ad-slot {
     margin-top: 20px;
@@ -241,6 +261,11 @@
 </head>
 <body>
 <div class="wrap">
+  <div class="brand">
+    <span class="brand-mark">F</span>
+    <span class="brand-name">Finansnytt</span>
+  </div>
+
   <header>
     <div>
       <h1>Nordiske aksjeindekser</h1>
@@ -251,10 +276,6 @@
     </div>
   </header>
 
-  <div class="status-bar">
-    <span id="statusText">Laster ferske tall &hellip;</span>
-  </div>
-
   <div class="grid" style="margin-bottom: 14px;">
     <div class="card navy">
       <div class="eyebrow">Sterkest i dag</div>
@@ -262,6 +283,7 @@
       <div class="headline" id="strongest-headline">OSEBX</div>
       <div class="desc" id="strongest-desc">Norge, Oslo Børs &middot; 2&nbsp;108,11</div>
       <div class="delta up" id="strongest-delta">+0,48 % i dag</div>
+      <div class="meta" id="strongest-meta">8. sep &middot; kl. 12:39</div>
     </div>
     <div class="card sand">
       <div class="eyebrow">Svakest i dag</div>
@@ -269,6 +291,7 @@
       <div class="headline" id="weakest-headline">OMXC25</div>
       <div class="desc" id="weakest-desc">Danmark, København &middot; 1&nbsp;916,56</div>
       <div class="delta up" id="weakest-delta">+0,25 % i dag</div>
+      <div class="meta" id="weakest-meta">8. sep &middot; kl. 12:39</div>
     </div>
   </div>
 
@@ -277,7 +300,8 @@
       <div class="eyebrow">OMX Nordic 40 &middot; samlet nordisk indeks</div>
       <div class="value" id="hero-value">2&nbsp;714,61 pts</div>
       <div class="delta up" id="hero-delta">+0,14 % i dag</div>
-      <div class="desc" id="hero-desc">40 største selskaper på tvers av de nordiske børsene, kl. 12:39 (norsk tid).</div>
+      <div class="desc" id="hero-desc">40 største selskaper på tvers av de nordiske børsene.</div>
+      <div class="hero-meta" id="hero-meta">8. sep &middot; kl. 12:39</div>
     </div>
     <div class="ring-wrap">
       <svg width="108" height="108" viewBox="0 0 108 108">
@@ -296,12 +320,14 @@
       <div class="headline" style="font-size:22px;" id="mid1-value">3&nbsp;305,08</div>
       <div class="desc" id="mid1-desc">Sverige, Stockholmsbörsen</div>
       <div class="delta up" id="mid1-delta">+0,40 % i dag</div>
+      <div class="meta" id="mid1-meta">8. sep &middot; kl. 12:39</div>
     </div>
     <div class="card sand">
       <div class="eyebrow" id="mid2-eyebrow">OMXH25</div>
       <div class="headline" style="font-size:22px;" id="mid2-value">6&nbsp;518,89</div>
       <div class="desc" id="mid2-desc">Finland, Helsingfors</div>
       <div class="delta up" id="mid2-delta">+0,36 % i dag</div>
+      <div class="meta" id="mid2-meta">8. sep &middot; kl. 12:39</div>
     </div>
     <div class="card navy">
       <div class="eyebrow">Dagens oppsummering</div>
@@ -321,7 +347,7 @@
       <a href="https://www.nordnet.no/market/se?se">Nordnet (OMXS30)</a> &middot;
       <a href="https://www.nordnet.no/market/dk?dk">Nordnet (OMXC25)</a> &middot;
       <a href="https://www.nordnet.no/market/fi?fi">Nordnet (OMXH25)</a> &middot;
-      <a href="https://www.marketscreener.com/quote/index/OMX-NORDIC-40-30080007/">MarketScreener (OMX Nordic 40)</a>
+      <a href="https://www.investing.com/indices/omx-nordic-40">Investing.com (OMX Nordic 40)</a>
     </div>
   </footer>
 </div>
@@ -356,9 +382,13 @@
     }
   }
 
-  function klokkeslett(iso) {
+  // Kort dato + klokkeslett til bruk inni hvert enkelt kort, f.eks. "8. sep · kl. 12:39".
+  function datoOgKlokkeslett(iso) {
     try {
-      return new Date(iso).toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' });
+      const d = new Date(iso);
+      const dato = d.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' });
+      const tid = d.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' });
+      return `${dato} · kl. ${tid}`;
     } catch {
       return '';
     }
@@ -389,12 +419,12 @@
   }
 
   async function hentOgVisTall() {
-    const statusText = document.getElementById('statusText');
     try {
       const res = await fetch(DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       const idx = data.indekser || {};
+      const tidspunkt = datoOgKlokkeslett(data.oppdatert);
 
       const land = LANDSINDEKSER
         .map((key) => idx[key] && { key, ...idx[key] })
@@ -413,11 +443,13 @@
       tekst('strongest-headline', sterkest.navn);
       tekst('strongest-desc', `${sterkest.land} · ${sterkest.verdi}`);
       settDelta(document.getElementById('strongest-delta'), sterkest.endring);
+      tekst('strongest-meta', tidspunkt);
 
       tekst('weakest-icon', ikonFor(svakest.endring));
       tekst('weakest-headline', svakest.navn);
       tekst('weakest-desc', `${svakest.land} · ${svakest.verdi}`);
       settDelta(document.getElementById('weakest-delta'), svakest.endring);
+      tekst('weakest-meta', tidspunkt);
 
       const midtSlots = ['mid1', 'mid2'];
       midtSlots.forEach((slot, i) => {
@@ -427,12 +459,14 @@
         tekst(`${slot}-value`, m.verdi);
         tekst(`${slot}-desc`, m.land);
         settDelta(document.getElementById(`${slot}-delta`), m.endring);
+        tekst(`${slot}-meta`, tidspunkt);
       });
 
       const n40 = idx.omxn40;
       tekst('hero-value', n40.verdi);
       settDelta(document.getElementById('hero-delta'), n40.endring);
-      tekst('hero-desc', `40 største selskaper på tvers av de nordiske børsene, kl. ${klokkeslett(data.oppdatert)} (norsk tid).`);
+      tekst('hero-desc', '40 største selskaper på tvers av de nordiske børsene.');
+      tekst('hero-meta', tidspunkt);
 
       const alle = [...land, n40];
       const oppAntall = alle.filter((x) => x.endring >= 0).length;
@@ -458,14 +492,10 @@
       tekst('footer-summary', footer);
 
       tekst('subtitle', 'Dagens status · oppdatert ' + formaterTidspunkt(data.oppdatert));
-
-      let status = 'Sist oppdatert ' + formaterTidspunkt(data.oppdatert);
-      if (data.sisteFeil && data.sisteFeil.length) {
-        status += ' – noen kilder svarte ikke sist runde, viser forrige kjente verdi for disse.';
-      }
-      statusText.textContent = status;
     } catch (err) {
-      statusText.textContent = 'Fant ikke ferske tall (' + err.message + '). Viser sist kjente tall.';
+      // Feiler hentingen (f.eks. data.json ikke tilgjengelig ennå), beholder vi
+      // bare de tallene som allerede står på siden i stedet for å vise en feilmelding.
+      console.error('Klarte ikke å hente ferske tall:', err.message);
     }
   }
 

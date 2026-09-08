@@ -1,0 +1,49 @@
+name: Oppdater indekstall
+
+on:
+  schedule:
+    # Kjører hvert 30. minutt, ca. 09:00–18:00 norsk tid (CEST/UTC+2), man–fre.
+    # NB: cron går alltid i UTC, derfor 7–16 (juster med 1 time når vinter-/sommertid skifter).
+    - cron: "0,30 7-16 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: oppdater-tall
+  cancel-in-progress: false
+
+jobs:
+  oppdater:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Sjekk ut repo
+        uses: actions/checkout@v4
+
+      - name: Sett opp Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Installer avhengigheter
+        run: npm install
+
+      - name: Installer Chromium (Playwright)
+        run: npx playwright install --with-deps chromium
+
+      - name: Hent ferske indekstall
+        run: node scripts/hent-tall.mjs
+
+      - name: Commit og push data.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          if git diff --staged --quiet; then
+            echo "Ingen endringer i data.json — hopper over commit."
+          else
+            git commit -m "Oppdater indekstall $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          fi

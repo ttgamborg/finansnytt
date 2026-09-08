@@ -201,11 +201,6 @@
   .hero .down { color: #f0c3b7; }
 
   .status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
     margin-bottom: 14px;
     padding: 10px 14px;
     border: 1px solid var(--border);
@@ -214,7 +209,6 @@
     color: var(--text-secondary);
     font-size: 13px;
   }
-  .status-bar button[disabled] { opacity: 0.6; cursor: default; }
 
   .ad-slot {
     margin-top: 20px;
@@ -259,7 +253,6 @@
 
   <div class="status-bar">
     <span id="statusText">Laster ferske tall &hellip;</span>
-    <button class="btn" id="refreshBtn" type="button">Hent nye tall</button>
   </div>
 
   <div class="grid" style="margin-bottom: 14px;">
@@ -322,7 +315,7 @@
   </div>
 
   <footer>
-    <span id="footer-summary">Alle fem nordiske indekser er opp i dag &ndash; Oslo Børs sterkest, København svakest av de fire landsindeksene. Tallene er forsinkede markedsdata (typisk inntil 15 minutter). De hentes automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden &ndash; trykk &laquo;Hent nye tall&raquo; for å laste inn siste tilgjengelige runde på nytt.</span>
+    <span id="footer-summary">Alle fem nordiske indekser er opp i dag &ndash; Oslo Børs sterkest, København svakest av de fire landsindeksene. Tallene er forsinkede markedsdata (typisk inntil 15 minutter) og oppdateres automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden.</span>
     <div class="sources">
       Kilder: <a href="https://e24.no/bors/instrument/OSEBX.OSE">E24 (OSEBX)</a> &middot;
       <a href="https://www.nordnet.se/marknaden/indikator/omxs30">Nordnet (OMXS30)</a> &middot;
@@ -343,10 +336,12 @@
   });
 
   // Henter data.json, som en GitHub Actions-jobb oppdaterer automatisk ca. hvert
-  // 30. minutt i børsåpningstiden. Knappen "Hent nye tall" laster bare inn den
-  // filen på nytt (ekte sanntidsoppslag mot børssidene lar seg ikke gjøre direkte
-  // fra nettleseren, siden kildene blokkerer den typen kall fra andre domener).
+  // 30. minutt i børsåpningstiden (ekte sanntidsoppslag mot børssidene lar seg ikke
+  // gjøre direkte fra nettleseren, siden kildene blokkerer den typen kall fra andre
+  // domener). Siden henter selv data.json på nytt hvert 5. minutt mens den er åpen,
+  // slik at tallene holder seg ferske helt av seg selv.
   const DATA_URL = 'data.json';
+  const AUTO_OPPDATER_MS = 5 * 60 * 1000;
   const LANDSINDEKSER = ['osebx', 'omxs30', 'omxc25', 'omxh25'];
   const RING_OMKRETS = 289.03;
 
@@ -393,10 +388,8 @@
     if (el) el.textContent = verdi;
   }
 
-  async function hentOgVisTall(manuell) {
+  async function hentOgVisTall() {
     const statusText = document.getElementById('statusText');
-    const refreshBtn = document.getElementById('refreshBtn');
-    if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.textContent = 'Henter …'; }
     try {
       const res = await fetch(DATA_URL + '?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -461,7 +454,7 @@
       } else {
         footer = `${oppAntall} av ${totalAntall} nordiske indekser er opp i dag – ${sterkest.navn} sterkest, ${svakest.navn} svakest.`;
       }
-      footer += ' Tallene er forsinkede markedsdata (typisk inntil 15 minutter). De hentes automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden – trykk «Hent nye tall» for å laste inn siste tilgjengelige runde på nytt.';
+      footer += ' Tallene er forsinkede markedsdata (typisk inntil 15 minutter) og oppdateres automatisk i bakgrunnen ca. hvert 30. minutt i børsåpningstiden.';
       tekst('footer-summary', footer);
 
       tekst('subtitle', 'Dagens status · oppdatert ' + formaterTidspunkt(data.oppdatert));
@@ -472,16 +465,12 @@
       }
       statusText.textContent = status;
     } catch (err) {
-      statusText.textContent = manuell
-        ? 'Klarte ikke å hente nye tall akkurat nå (' + err.message + '). Viser sist kjente tall.'
-        : 'Fant ikke ferske tall (' + err.message + '). Viser sist kjente tall.';
-    } finally {
-      if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.textContent = 'Hent nye tall'; }
+      statusText.textContent = 'Fant ikke ferske tall (' + err.message + '). Viser sist kjente tall.';
     }
   }
 
-  document.getElementById('refreshBtn').addEventListener('click', () => hentOgVisTall(true));
-  hentOgVisTall(false);
+  hentOgVisTall();
+  setInterval(hentOgVisTall, AUTO_OPPDATER_MS);
 </script>
 </body>
 </html>

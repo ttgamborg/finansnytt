@@ -2,9 +2,9 @@ name: Oppdater indekstall
 
 on:
   schedule:
-    # Kjører hvert 30. minutt, ca. 09:00–18:00 norsk tid (CEST/UTC+2), man–fre.
+    # Kjører hvert 15. minutt, ca. 09:00–18:00 norsk tid (CEST/UTC+2), man–fre.
     # NB: cron går alltid i UTC, derfor 7–16 (juster med 1 time når vinter-/sommertid skifter).
-    - cron: "0,30 7-16 * * 1-5"
+    - cron: "0,15,30,45 7-16 * * 1-5"
   workflow_dispatch: {}
 
 permissions:

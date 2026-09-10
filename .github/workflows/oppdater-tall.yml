@@ -2,15 +2,25 @@ name: Oppdater indekstall
 
 on:
   schedule:
-    # Kjører hvert 15. minutt, ca. 09:00–18:00 norsk tid (CEST/UTC+2), man–fre.
-    # NB: cron går alltid i UTC, derfor 7–16 (juster med 1 time når vinter-/sommertid skifter).
+    # Kjører hvert 15. minutt i børsenes faktiske åpningstid, man–fre:
+    #   Oslo Børs        09:00–16:20
+    #   Nasdaq Stockholm  09:00–17:30
+    #   Nasdaq Copenhagen 09:00–17:00
+    #   Nasdaq Helsinki   09:00–17:30
+    # Alle fire åpner kl. 09:00 norsk tid, og Stockholm/Helsinki stenger sist kl.
+    # 17:30 — derfor kjører vi fra 09:00 til ca. 17:52 (litt buffer for at siste
+    # sluttkurs skal rekke å bli synlig hos kildene våre).
+    #
+    # NB: cron går alltid i UTC, derfor 7–15 her (norsk tid er UTC+2 om sommeren/
+    # UTC+1 om vinteren — juster med 1 time når vinter-/sommertid skifter, samme
+    # helg for alle de fire landene).
     #
     # Minuttene er bevisst forskjøvet til 7/22/37/52 i stedet for 0/15/30/45.
     # GitHub kjører veldig mange jobber nøyaktig på de "runde" minuttallene
     # (0/15/30/45), og under pågang dropper de rett og slett planlagte kjøringer
     # helt uten varsel i stedet for å bare forsinke dem. Å legge tidspunktet
     # midt mellom disse gjør at jobben treffer et roligere tidspunkt i køen.
-    - cron: "7,22,37,52 7-16 * * 1-5"
+    - cron: "7,22,37,52 7-15 * * 1-5"
   workflow_dispatch: {}
 
 permissions:

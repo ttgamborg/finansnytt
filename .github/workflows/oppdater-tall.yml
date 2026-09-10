@@ -4,7 +4,13 @@ on:
   schedule:
     # Kjører hvert 15. minutt, ca. 09:00–18:00 norsk tid (CEST/UTC+2), man–fre.
     # NB: cron går alltid i UTC, derfor 7–16 (juster med 1 time når vinter-/sommertid skifter).
-    - cron: "0,15,30,45 7-16 * * 1-5"
+    #
+    # Minuttene er bevisst forskjøvet til 7/22/37/52 i stedet for 0/15/30/45.
+    # GitHub kjører veldig mange jobber nøyaktig på de "runde" minuttallene
+    # (0/15/30/45), og under pågang dropper de rett og slett planlagte kjøringer
+    # helt uten varsel i stedet for å bare forsinke dem. Å legge tidspunktet
+    # midt mellom disse gjør at jobben treffer et roligere tidspunkt i køen.
+    - cron: "7,22,37,52 7-16 * * 1-5"
   workflow_dispatch: {}
 
 permissions:

@@ -15,12 +15,15 @@ on:
     # UTC+1 om vinteren — juster med 1 time når vinter-/sommertid skifter, samme
     # helg for alle de fire landene).
     #
-    # Minuttene er bevisst forskjøvet til 7/22/37/52 i stedet for 0/15/30/45.
+    # Minuttene er bevisst forskjøvet til 5/20/35/50 i stedet for 0/15/30/45.
     # GitHub kjører veldig mange jobber nøyaktig på de "runde" minuttallene
     # (0/15/30/45), og under pågang dropper de rett og slett planlagte kjøringer
     # helt uten varsel i stedet for å bare forsinke dem. Å legge tidspunktet
     # midt mellom disse gjør at jobben treffer et roligere tidspunkt i køen.
-    - cron: "7,22,37,52 7-15 * * 1-5"
+    #
+    # (Re-lastet opp 10. sep. 2026 for å få GitHub til å registrere
+    # schedule-triggeren på nytt, etter at den sluttet å kjøre av seg selv.)
+    - cron: "5,20,35,50 7-15 * * 1-5"
   workflow_dispatch: {}
 
 permissions:

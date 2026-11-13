@@ -1,29 +1,29 @@
 {
-  "oppdatert": "2026-11-12T15:56:11.811Z",
+  "oppdatert": "2026-11-13T15:17:59.977Z",
   "indekser": {
     "osebx": {
       "navn": "OSEBX",
       "land": "Norge, Oslo Børs",
-      "verdi": "2 106,49",
-      "endring": 1.2
+      "verdi": "2 110,39",
+      "endring": 0.18
     },
     "omxs30": {
       "navn": "OMXS30",
       "land": "Sverige, Stockholmsbörsen",
-      "verdi": "3 350,62",
-      "endring": -0.28
+      "verdi": "3 356,11",
+      "endring": -0.1
     },
     "omxc25": {
       "navn": "OMXC25",
       "land": "Danmark, København",
-      "verdi": "2 014,90",
-      "endring": 0.37
+      "verdi": "2 016,17",
+      "endring": 0.07
     },
     "omxh25": {
       "navn": "OMXH25",
       "land": "Finland, Helsingfors",
-      "verdi": "6 322,12",
-      "endring": -0.09
+      "verdi": "6 318,15",
+      "endring": -0.37
     },
     "omxn40": {
       "navn": "OMX Nordic 40",
@@ -33,7 +33,6 @@
     }
   },
   "sisteFeil": [
-    "osebx: Klarte ikke å tolke endringstallet for \"OSEBX\": \"0,00%\"",
     "omxn40: OMX Nordic 40-tallet rakk ikke å laste innen 15 sekunder"
   ]
 }

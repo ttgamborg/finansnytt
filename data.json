@@ -1,29 +1,29 @@
 {
-  "oppdatert": "2026-11-19T16:30:34.377Z",
+  "oppdatert": "2026-11-20T16:02:28.586Z",
   "indekser": {
     "osebx": {
       "navn": "OSEBX",
       "land": "Norge, Oslo Børs",
-      "verdi": "2 068,75",
-      "endring": -0.25
+      "verdi": "2 037,68",
+      "endring": -1.5
     },
     "omxs30": {
       "navn": "OMXS30",
       "land": "Sverige, Stockholmsbörsen",
-      "verdi": "3 258,49",
-      "endring": 0.07
+      "verdi": "3 168,95",
+      "endring": -2.7
     },
     "omxc25": {
       "navn": "OMXC25",
       "land": "Danmark, København",
-      "verdi": "1 950,83",
-      "endring": -1.09
+      "verdi": "1 918,19",
+      "endring": -1.67
     },
     "omxh25": {
       "navn": "OMXH25",
       "land": "Finland, Helsingfors",
-      "verdi": "6 087,39",
-      "endring": -0.35
+      "verdi": "5 919,99",
+      "endring": -2.79
     },
     "omxn40": {
       "navn": "OMX Nordic 40",
